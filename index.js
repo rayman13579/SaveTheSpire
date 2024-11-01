@@ -30,7 +30,7 @@ const upload = multer({ storage: storage, preservePath: true });
 
 http.createServer(app).listen(httpPort, () => console.log('Listening for HTTP on %s...', httpPort));
 
-app.put('/upload', upload.single('saveTheSpire'), async (req, res) => {
+app.put('', upload.single('saveTheSpire'), async (req, res) => {
     console.log('');
     let userAgent = req.headers['user-agent'];
     log(userAgent, 'uploading save');
@@ -47,7 +47,7 @@ app.put('/upload', upload.single('saveTheSpire'), async (req, res) => {
         });
 });
 
-app.get('/download', (req, res) => {
+app.get('', (req, res) => {
     console.log('');
     let userAgent = req.headers['user-agent'];
     log(userAgent, 'downloading save');
