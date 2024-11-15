@@ -51,7 +51,8 @@ app.get('', (req, res) => {
     console.log('');
     let userAgent = req.headers['user-agent'];
     log(userAgent, 'downloading save');
-    convertDates(userAgent);
+    let characters = fs.readdirSync(__dirname + '/files/runs');
+    convertDates(userAgent, characters);
     zip(userAgent, 'saveTheSpire.zip')
         .then(() => {
             res.download(__dirname + '/saveTheSpire.zip');
@@ -129,6 +130,11 @@ let convertFiles = (files) => {
         if (file.path.startsWith('saves/')) {
             decodeSave(file);
         }
+        if (file.path.startsWith('runs/')) {
+            let run = JSON.parse(file.data.toString());
+            run.local_time = formatDateTime(run.local_time, 'SaveTheSpireApp');
+            fs.writeFileSync(__dirname + '/files/' + file.path, JSON.stringify(run));
+        }
     }
 }
 
@@ -147,8 +153,7 @@ let decodeSave = (file) => {
     fs.writeFileSync(__dirname + '/files/' + file.path, decoded);
 }
 
-let convertDates = (userAgent) => {
-    let characters = fs.readdirSync(__dirname + '/files/runs');
+let convertDates = (userAgent, characters) => {
     for (let character of characters) {
         let files = fs.readdirSync(__dirname + '/files/runs/' + character);
         for (let file of files) {
