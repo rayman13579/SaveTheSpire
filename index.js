@@ -117,11 +117,17 @@ let zip = (userAgent, filename) => {
     });
 }
 
-let backupSave = userAgent => {
-    git
+let backupSave = async userAgent => {
+    try {
+    await git
         .add('*')
         .commit(dateformat(new Date(), logDateFormat) + ' ' + userAgent)
         .push('origin', 'master');
+    } catch (err) {
+        log(userAgent, 'error pushing to git');
+        log(userAgent, err);
+        return;
+    }
     log(userAgent, 'pushed to git');
 }
 
