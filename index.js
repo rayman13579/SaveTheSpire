@@ -66,6 +66,19 @@ app.get('', (req, res) => {
         });
 });
 
+app.get('/commit', (req, res) => {
+    console.log('');
+    console.log('getting last commit');
+    git.raw(['log', '-1', '--pretty=%B'], (err, result) => {
+        if (err) {
+            console.log(err);
+            res.send(500);
+        }
+        console.log('last commit message: ' + result);
+        res.send(result);
+    });
+});
+
 let clearDirectory = userAgent => {
     fs.rm(__dirname + '/files/preferences', { recursive: true, force: true }, () => { });
     fs.rm(__dirname + '/files/runs', { recursive: true, force: true }, () => { });
@@ -117,17 +130,11 @@ let zip = (userAgent, filename) => {
     });
 }
 
-let backupSave = async userAgent => {
-    try {
-    await git
+let backupSave = userAgent => {
+    git
         .add('*')
         .commit(dateformat(new Date(), logDateFormat) + ' ' + userAgent)
         .push('origin', 'master');
-    } catch (err) {
-        log(userAgent, 'error pushing to git');
-        log(userAgent, err);
-        return;
-    }
     log(userAgent, 'pushed to git');
 }
 
